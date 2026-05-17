@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Manage Services - PetSitter Admin</title>
+</head>
+<body>
+    <h2>Platform Services</h2>
+
+    <div th:if="${services.empty}">
+        <p>No services exist on the platform yet.</p>
+    </div>
+
+    <ul th:if="${!services.empty}">
+        <li th:each="svc : ${services}">
+            <strong th:text="${svc.type}">Service Type</strong>: <span th:text="${svc.description}">Description</span>
+            <form action="/admin/services/delete" method="post" onsubmit="return confirm('Are you sure you want to permanently delete this service?');" style="display:inline-block; margin-left: 10px;">
+                <input type="hidden" name="serviceId" th:value="${svc.serviceId}"/>
+                <button type="submit" style="color: red;">Delete</button>
+            </form>
+        </li>
+    </ul>
+
+    <h3>Add New Service</h3>
+    <form action="/admin/services/add" method="post">
+        <div>
+            <label for="type">Service Name:</label>
+            <input type="text" id="type" name="type" required="required"/>
+        </div>
+        <div>
+            <label for="description">Description:</label>
+            <textarea id="description" name="description" required="required"></textarea>
+        </div>
+        <button type="submit">Add Service</button>
+    </form>
+
+    <p><br/><a href="/dashboard">Back to Dashboard</a></p>
+</body>
+</html>

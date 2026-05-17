@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Manage Pets - PetSitter Admin</title>
+</head>
+<body>
+    <h2>All Platform Pets</h2>
+
+    <div th:if="${pets.empty}">
+        <p>No pets exist on the platform yet.</p>
+    </div>
+
+    <table border="1" th:if="${!pets.empty}">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Species</th>
+            <th>Age</th>
+            <th>Owner</th>
+            <th>Actions</th>
+        </tr>
+        <tr th:each="pet : ${pets}">
+            <td th:text="${pet.petId}"></td>
+            <td th:text="${pet.name}"></td>
+            <td th:text="${pet.petType.species}"></td>
+            <td th:text="${pet.age}"></td>
+            <td th:text="${pet.owner.username}"></td>
+            <td>
+                <form action="/admin/pets/delete" method="post" onsubmit="return confirm('Are you sure you want to permanently delete this pet?');">
+                    <input type="hidden" name="petId" th:value="${pet.petId}"/>
+                    <button type="submit" style="color: red;">Delete</button>
+                </form>
+            </td>
+        </tr>
+    </table>
+
+    <p><br/><a href="/dashboard">Back to Dashboard</a></p>
+</body>
+</html>

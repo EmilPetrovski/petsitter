@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Sitter Profile - PetSitter</title>
+</head>
+<body>
+    <h2 th:text="${sitter.firstName + ' ' + sitter.lastName}">Sitter Name</h2>
+    
+    <p><strong>Average Rating:</strong> 
+        <span th:if="${averageRating > 0.0}" th:text="${averageRating % 1 == 0 ? #numbers.formatInteger(averageRating, 1) : #numbers.formatDecimal(averageRating, 1, 1)} + '/5'"></span>
+        <span th:if="${averageRating == 0.0}"><em>No reviews yet</em></span>
+    </p>
+    <p><a th:href="@{/book(sitterId=${sitter.userId})}">Book this Sitter</a></p>
+
+    <h3>Reviews:</h3>
+    <div th:if="${reviews.empty}">
+        <p>No reviews have been left for this sitter.</p>
+    </div>
+    <ul th:if="${!reviews.empty}">
+        <li th:each="review : ${reviews}">
+            <strong th:text="${review.rating} + '/5'">Rating</strong>
+            - <em th:text="${review.comment}">Comment</em>
+        </li>
+    </ul>
+
+    <p><br/><a href="/search">Back to Search</a></p>
+</body>
+</html>

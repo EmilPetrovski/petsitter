@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Manage Reviews - PetSitter Admin</title>
+</head>
+<body>
+    <h2>All Platform Reviews</h2>
+
+    <div th:if="${reviews.empty}">
+        <p>No reviews exist on the platform yet.</p>
+    </div>
+
+    <table border="1" th:if="${!reviews.empty}">
+        <tr>
+            <th>ID</th>
+            <th>Booking ID</th>
+            <th>Sitter</th>
+            <th>Owner</th>
+            <th>Rating</th>
+            <th>Comment</th>
+            <th>Actions</th>
+        </tr>
+        <tr th:each="review : ${reviews}">
+            <td th:text="${review.reviewId}"></td>
+            <td th:text="${review.booking.bookingId}"></td>
+            <td th:text="${review.booking.sitter.username}"></td>
+            <td th:text="${review.booking.owner.username}"></td>
+            <td th:text="${review.rating} + '/5'"></td>
+            <td th:text="${review.comment}"></td>
+            <td>
+                <form action="/admin/reviews/delete" method="post" onsubmit="return confirm('Are you sure you want to permanently delete this review?');">
+                    <input type="hidden" name="reviewId" th:value="${review.reviewId}"/>
+                    <button type="submit" style="color: red;">Delete</button>
+                </form>
+            </td>
+        </tr>
+    </table>
+
+    <p><br/><a href="/dashboard">Back to Dashboard</a></p>
+</body>
+</html>

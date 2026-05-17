@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Find a Sitter - PetSitter</title>
+</head>
+<body>
+    <h2>Find a Pet Sitter</h2>
+    
+    <form action="/search" method="get">
+        <label for="serviceType">Need a specific service?</label>
+        <select id="serviceType" name="serviceType">
+            <option value="">-- Select a Service --</option>
+            <option th:each="service : ${services}" 
+                    th:value="${service.type}" 
+                    th:text="${service.type}"
+                    th:selected="${service.type == selectedService}"></option>
+        </select>
+        <button type="submit">Search</button>
+    </form>
+
+    <div th:if="${sitters != null}">
+        <h3>Search Results:</h3>
+        <p th:if="${sitters.empty}">No sitters found offering this service.</p>
+        <ul th:if="${!sitters.empty}">
+            <li th:each="sitter : ${sitters}">
+                <a th:href="@{/sitter(sitterId=${sitter.userId})}"><strong th:text="${sitter.firstName + ' ' + sitter.lastName}">Sitter Name</strong></a>
+                <span th:if="${ratings[sitter.userId] > 0.0}"> - Rating: <strong th:text="${ratings[sitter.userId] % 1 == 0 ? #numbers.formatInteger(ratings[sitter.userId], 1) : #numbers.formatDecimal(ratings[sitter.userId], 1, 1)}"></strong>/5</span>
+                <span th:if="${ratings[sitter.userId] == 0.0}"> - <em>No reviews yet</em></span>
+                <br/>
+                <a th:href="@{/book(sitterId=${sitter.userId}, serviceType=${selectedService})}">Book Now</a>
+            </li>
+        </ul>
+    </div>
+
+    <p><br/><a href="/dashboard">Back to Dashboard</a></p>
+</body>
+</html>

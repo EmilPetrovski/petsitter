@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Dashboard - PetSitter</title>
+</head>
+<body>
+    <h2>Welcome to your Dashboard, <span th:text="${user.firstName}">User</span>!</h2>
+    <p>Logged in as: <strong th:text="${user.username}"></strong> (<span th:text="${role}">Role</span>)</p>
+
+    <p><a href="/profile">Edit My Profile</a></p>
+
+    <div th:if="${role == 'OWNER'}">
+        <h3>Pet Owner Menu</h3>
+        <ul>
+            <li><a href="/pets/add">Add a Pet</a></li>
+            <li><a href="/pets">My Pets</a></li>
+            <li><a href="/search">Find a Sitter</a></li>
+            <li><a href="/my-bookings">My Bookings</a></li>
+        </ul>
+    </div>
+
+    <div th:if="${role == 'SITTER'}">
+        <h3>Pet Sitter Menu</h3>
+        <ul>
+            <li><a href="/requests">Pending Requests</a></li>
+            <li><a href="/services">My Offered Services</a></li>
+        </ul>
+    </div>
+
+    <div th:if="${role == 'ADMIN'}">
+        <h3>Admin Menu</h3>
+        <ul>
+            <li><a href="/admin/users">All Users</a></li>
+            <li><a href="/admin/bookings">All Bookings</a></li>
+            <li><a href="/admin/pets">All Pets</a></li>
+            <li><a href="/admin/reviews">All Reviews</a></li>
+            <li><a href="/admin/services">Manage Services</a></li>
+        </ul>
+    </div>
+
+    <p><br/><a href="/logout">Logout</a></p>
+</body>
+</html>

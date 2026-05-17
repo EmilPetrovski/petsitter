@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Book Sitter - PetSitter</title>
+</head>
+<body>
+    <h2>Book <span th:text="${sitter.firstName}">Sitter</span> <span th:text="${sitter.lastName}"></span></h2>
+    
+    <p th:if="${serviceType != null and !serviceType.empty}"><strong>Service Type:</strong> <span th:text="${serviceType}"></span></p>
+    
+    <div th:if="${param.error}">
+        <p style="color: red;">You must select at least 1 pet for this booking!</p>
+    </div>
+    
+    <form action="/book" method="post">
+        <input type="hidden" name="sitterId" th:value="${sitter.userId}"/>
+        <input type="hidden" name="serviceType" th:value="${serviceType}" th:if="${serviceType != null and !serviceType.empty}"/>
+        <div>
+            <label for="dateFrom">From Date:</label>
+            <input type="date" id="dateFrom" name="dateFrom" required="required" onchange="calculateDays()"/>
+        </div>
+        <div>
+            <label for="dateTo">To Date:</label>
+            <input type="date" id="dateTo" name="dateTo" required="required" onchange="calculateDays()"/>
+        </div>
+        <p><strong>Duration:</strong> <span id="daysCount">0 day(s)</span></p>
+        <div>
+            <label for="address">Address:</label>
+            <input type="text" id="address" name="address" required="required"/>
+        </div>
+        <div>
+            <label>Select Pets for this booking:</label><br/>
+            <div th:each="pet : ${pets}">
+                <input type="checkbox" th:id="'pet_' + ${pet.petId}" name="petIds" th:value="${pet.petId}"/>
+                <label th:for="'pet_' + ${pet.petId}" th:text="${pet.name} + ' (' + ${pet.petType.species} + ')'"></label>
+            </div>
+        </div>
+        <div>
+            <label for="amount">Amount (MKD):</label>
+            <input type="number" id="amount" name="amount" min="1" required="required"/>
+        </div>
+        <div>
+            <label for="paymentType">Payment Method:</label>
+            <select id="paymentType" name="paymentType" required="required">
+                <option value="Card">Card</option>
+                <option value="Cash">Cash</option>
+                <option value="Bank transfer">Bank transfer</option>
+            </select>
+        </div>
+        <br/>
+        <button type="submit">Send Booking Request</button>
+    </form>
+    
+    <p><a href="/search">Cancel</a></p>
+
+    <script>
+        function calculateDays() {
+            var from = document.getElementById('dateFrom').value;
+            var to = document.getElementById('dateTo').value;
+            if (from && to) {
+                var fromDate = new Date(from);
+                var toDate = new Date(to);
+                if (toDate >= fromDate) {
+                    var diffTime = Math.abs(toDate - fromDate);
+                    var diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; 
+                    document.getElementById('daysCount').innerText = diffDays + " day(s)";
+                } else {
+                    document.getElementById('daysCount').innerText = "Invalid date range";
+                }
+            }
+        }
+    </script>
+</body>
+</html>

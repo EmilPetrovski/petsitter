@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Manage Users - PetSitter Admin</title>
+</head>
+<body>
+    <h2>All Platform Users</h2>
+
+    <div th:if="${users.empty}">
+        <p>No users exist on the platform yet.</p>
+    </div>
+
+    <table border="1" th:if="${!users.empty}">
+        <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Details</th>
+            <th>Actions</th>
+        </tr>
+        <tr th:each="user : ${users}">
+            <td th:text="${user.userId}"></td>
+            <td th:text="${user.username}"></td>
+            <td th:text="${user.firstName + ' ' + user.lastName}"></td>
+            <td th:text="${user.email}"></td>
+            <td>
+                <div th:if="${ownerPets != null and ownerPets.containsKey(user.userId)}">
+                    <strong>Pets:</strong>
+                    <span th:each="pet, iterStat : ${ownerPets[user.userId]}">
+                        <span th:text="${pet.name} + ' (' + ${pet.petType.species} + ', ' + ${pet.age} + ' years)'"></span><span th:if="${!iterStat.last}">, </span>
+                    </span>
+                    <em th:if="${ownerPets[user.userId].empty}">No pets</em>
+                </div>
+                <div th:if="${sitterServices != null and sitterServices.containsKey(user.userId)}">
+                    <strong>Offered Services:</strong>
+                    <span th:each="service, iterStat : ${sitterServices[user.userId]}">
+                        <span th:text="${service.type}"></span><span th:if="${!iterStat.last}">, </span>
+                    </span>
+                    <em th:if="${sitterServices[user.userId].empty}">No services</em>
+                </div>
+            </td>
+            <td>
+                <form action="/admin/users/delete" method="post" onsubmit="return confirm('Are you sure you want to permanently delete this user and ALL their data (bookings, pets, reviews)?');" th:if="${user.username != 'admin_darko'}">
+                    <input type="hidden" name="userId" th:value="${user.userId}"/>
+                    <button type="submit" style="color: red;">Delete</button>
+                </form>
+                <span th:if="${user.username == 'admin_darko'}"><em>Admin</em></span>
+            </td>
+        </tr>
+    </table>
+
+    <p><br/><a href="/dashboard">Back to Dashboard</a></p>
+</body>
+</html>

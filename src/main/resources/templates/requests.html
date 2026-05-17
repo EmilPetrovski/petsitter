@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Pending Requests - PetSitter</title>
+</head>
+<body>
+    <h2>My Booking Requests</h2>
+
+    <div th:if="${activeRequests.empty and inactiveRequests.empty}">
+        <p>You have no booking requests.</p>
+    </div>
+
+    <div th:if="${!activeRequests.empty}">
+        <h3>Active Requests</h3>
+        <ul>
+            <li th:each="booking : ${activeRequests}">
+                <strong>From:</strong> <span th:text="${booking.owner.firstName + ' ' + booking.owner.lastName}">Owner</span><br/>
+                <strong>Dates:</strong> <span th:text="${booking.dateFrom}"></span> to <span th:text="${booking.dateTo}"></span><br/>
+                <strong>Duration:</strong> <span th:text="${booking.dateTo.toEpochDay() - booking.dateFrom.toEpochDay() + 1}"></span> day(s)<br/>
+                <strong>Address:</strong> <span th:text="${booking.address}"></span><br/>
+                <span th:if="${booking.services != null and !booking.services.empty}">
+                    <strong>Service:</strong> 
+                    <span th:each="service, iterStat : ${booking.services}">
+                        <span th:text="${service.type}"></span><span th:if="${!iterStat.last}">, </span>
+                    </span>
+                    <br/>
+                </span>
+                <strong>Pets:</strong> 
+                <span th:each="pet, iterStat : ${booking.pets}">
+                    <span th:text="${pet.name + ' (' + pet.petType.species + ')'}"></span><span th:if="${!iterStat.last}">, </span>
+                </span>
+                <br/>
+                <strong th:if="${booking.payment != null}">Payment:</strong> 
+                <span th:if="${booking.payment != null}" th:text="${booking.payment.amount} + ' MKD (' + ${booking.payment.paymentType} + ')'"></span>
+                <br th:if="${booking.payment != null}"/>
+                <strong>Status:</strong> 
+                <strong th:text="${booking.status}" 
+                        th:style="${booking.status == 'Confirmed' or booking.status == 'Completed' ? 'color: green;' : (booking.status == 'Rejected' or booking.status == 'Canceled' ? 'color: red;' : 'color: orange;')}">
+                    Pending
+                </strong>
+                <br/>
+                <em>Message them at <a th:href="'mailto:' + ${booking.owner.email}"><strong th:text="${booking.owner.email}"></strong></a> to provide further details.</em>
+
+                <div th:if="${booking.status == 'Pending'}">
+                    <form action="/requests/update" method="post" style="display:inline;">
+                        <input type="hidden" name="bookingId" th:value="${booking.bookingId}"/>
+                        <input type="hidden" name="status" value="Confirmed"/>
+                        <button type="submit">Accept</button>
+                    </form>
+                    <form action="/requests/update" method="post" style="display:inline;">
+                        <input type="hidden" name="bookingId" th:value="${booking.bookingId}"/>
+                        <input type="hidden" name="status" value="Rejected"/>
+                        <button type="submit">Reject</button>
+                    </form>
+                </div>
+                <div th:if="${booking.status == 'Confirmed'}">
+                    <form action="/requests/update" method="post" style="display:inline;">
+                        <input type="hidden" name="bookingId" th:value="${booking.bookingId}"/>
+                        <input type="hidden" name="status" value="Completed"/>
+                        <button type="submit">Mark as Completed</button>
+                    </form>
+                    <form action="/requests/update" method="post" style="display:inline;" onsubmit="return confirm('Are you sure you want to cancel this booking?');">
+                        <input type="hidden" name="bookingId" th:value="${booking.bookingId}"/>
+                        <input type="hidden" name="status" value="Canceled"/>
+                        <button type="submit" style="color: red;">Cancel Booking</button>
+                    </form>
+                </div>
+                <hr/>
+            </li>
+        </ul>
+    </div>
+
+    <div th:if="${!inactiveRequests.empty}">
+        <h3>Past / Inactive Requests</h3>
+        <ul>
+            <li th:each="booking : ${inactiveRequests}">
+                <strong>From:</strong> <span th:text="${booking.owner.firstName + ' ' + booking.owner.lastName}">Owner</span><br/>
+                <strong>Dates:</strong> <span th:text="${booking.dateFrom}"></span> to <span th:text="${booking.dateTo}"></span><br/>
+                <strong>Duration:</strong> <span th:text="${booking.dateTo.toEpochDay() - booking.dateFrom.toEpochDay() + 1}"></span> day(s)<br/>
+                <strong>Address:</strong> <span th:text="${booking.address}"></span><br/>
+                <span th:if="${booking.services != null and !booking.services.empty}">
+                    <strong>Service:</strong> 
+                    <span th:each="service, iterStat : ${booking.services}">
+                        <span th:text="${service.type}"></span><span th:if="${!iterStat.last}">, </span>
+                    </span>
+                    <br/>
+                </span>
+                <strong>Pets:</strong> 
+                <span th:each="pet, iterStat : ${booking.pets}">
+                    <span th:text="${pet.name + ' (' + pet.petType.species + ')'}"></span><span th:if="${!iterStat.last}">, </span>
+                </span>
+                <br/>
+                <strong th:if="${booking.payment != null}">Payment:</strong> 
+                <span th:if="${booking.payment != null}" th:text="${booking.payment.amount} + ' MKD (' + ${booking.payment.paymentType} + ')'"></span>
+                <br th:if="${booking.payment != null}"/>
+                <strong>Status:</strong> 
+                <strong th:text="${booking.status}" 
+                        th:style="${booking.status == 'Confirmed' or booking.status == 'Completed' ? 'color: green;' : (booking.status == 'Rejected' or booking.status == 'Canceled' ? 'color: red;' : 'color: orange;')}">
+                    Pending
+                </strong>
+                <br/>
+                <em>Message them at <a th:href="'mailto:' + ${booking.owner.email}"><strong th:text="${booking.owner.email}"></strong></a> to provide further details.</em>
+                <hr/>
+            </li>
+        </ul>
+    </div>
+
+    <p><a href="/dashboard">Back to Dashboard</a></p>
+</body>
+</html>

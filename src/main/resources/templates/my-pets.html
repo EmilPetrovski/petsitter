@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>My Pets - PetSitter</title>
+</head>
+<body>
+    <h2>My Pets</h2>
+    
+    <div th:if="${pets.empty}">
+        <p>You haven't added any pets yet.</p>
+    </div>
+    
+    <ul th:if="${!pets.empty}">
+        <li th:each="pet : ${pets}">
+            <div th:if="${pet.photo != null and !pet.photo.empty}">
+                <img th:src="${pet.photo}" alt="Pet Photo" style="max-width: 150px; border-radius: 8px;"/>
+            </div>
+            <strong th:text="${pet.name}">Pet Name</strong> 
+            (<span th:text="${pet.petType.species}">Species</span>) - 
+            Age: <span th:text="${pet.age}">Age</span>
+            <p th:if="${pet.specialNeeds != null and !pet.specialNeeds.empty}">Needs: <span th:text="${pet.specialNeeds}"></span></p>
+            <p th:if="${pet.description != null and !pet.description.empty}">Description: <span th:text="${pet.description}"></span></p>
+            
+            <form action="/pets/delete" method="post" onsubmit="return confirm('Are you sure you want to remove this pet?');" style="margin-top: 10px; display: inline-block;">
+                <input type="hidden" name="petId" th:value="${pet.petId}"/>
+                <button type="submit" style="color: red;">Delete Pet</button>
+            </form>
+            <a th:href="@{/pets/edit(petId=${pet.petId})}" style="margin-left: 10px;">Edit Pet</a>
+            <br/>
+        </li>
+    </ul>
+    
+    <p><a href="/pets/add">Add a new pet</a></p>
+    <p><a href="/dashboard">Back to Dashboard</a></p>
+</body>
+</html>

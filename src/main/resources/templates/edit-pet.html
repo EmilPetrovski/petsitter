@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Edit Pet - PetSitter</title>
+</head>
+<body>
+    <h2>Edit Pet</h2>
+    <div th:if="${error}">
+        <p style="color: red;" th:text="${error}"></p>
+    </div>
+    
+    <form action="/pets/edit" method="post">
+        <input type="hidden" name="petId" th:value="${pet.petId}"/>
+        <div>
+            <label for="name">Pet Name (Cannot be changed):</label>
+            <input type="text" id="name" name="name" th:value="${pet.name}" disabled="disabled"/>
+        </div>
+        <div>
+            <label for="species">Species (Cannot be changed):</label>
+            <input type="text" id="species" name="species" th:value="${pet.petType.species}" disabled="disabled"/>
+        </div>
+        <div>
+            <label for="age">Age:</label>
+            <input type="number" id="age" name="age" th:value="${pet.age}" required="required" min="0"/>
+        </div>
+        <div>
+            <label for="photoUrl">Photo URL:</label>
+            <input type="url" id="photoUrl" name="photoUrl" th:value="${pet.photo}" placeholder="https://..."/>
+        </div>
+        <div>
+            <label for="specialNeeds">Special Needs:</label>
+            <textarea id="specialNeeds" name="specialNeeds" th:text="${pet.specialNeeds}"></textarea>
+        </div>
+        <div>
+            <label for="description">Description:</label>
+            <textarea id="description" name="description" th:text="${pet.description}"></textarea>
+        </div>
+        <button type="submit">Save Changes</button>
+    </form>
+    <p><a href="/pets">Cancel</a></p>
+</body>
+</html>

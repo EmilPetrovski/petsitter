@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Add a Pet - PetSitter</title>
+</head>
+<body>
+    <h2>Add a New Pet</h2>
+    <div th:if="${error}">
+        <p style="color: red;" th:text="${error}"></p>
+    </div>
+    
+    <form action="/pets/add" method="post">
+        <div>
+            <label for="name">Pet Name:</label>
+            <input type="text" id="name" name="name" required="required"/>
+        </div>
+        <div>
+            <label for="age">Age:</label>
+            <input type="number" id="age" name="age" required="required" min="0"/>
+        </div>
+        <div>
+            <label for="photoUrl">Photo URL:</label>
+            <input type="url" id="photoUrl" name="photoUrl" placeholder="https://..."/>
+        </div>
+        <div>
+            <label for="petTypeId">Species:</label>
+            <select id="petTypeId" name="petTypeId" required="required">
+                <option th:each="type : ${petTypes}" th:value="${type.pettypeId}" th:text="${type.species}"></option>
+            </select>
+        </div>
+        <div>
+            <label for="specialNeeds">Special Needs:</label>
+            <textarea id="specialNeeds" name="specialNeeds"></textarea>
+        </div>
+        <div>
+            <label for="description">Description:</label>
+            <textarea id="description" name="description"></textarea>
+        </div>
+        <button type="submit">Add Pet</button>
+    </form>
+    <p><a href="/dashboard">Back to Dashboard</a></p>
+</body>
+</html>
