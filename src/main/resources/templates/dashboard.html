@@ -2,42 +2,81 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Dashboard - PetSitter</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; }
+        .text-teal { color: #0f766e; }
+        .bg-teal { background-color: #0f766e; color: white; }
+        .btn-teal { background-color: #0f766e; color: white; transition: all 0.2s ease-in-out; }
+        .btn-teal:hover { background-color: #115e59; color: white; transform: translateY(-1px); }
+        .btn-outline-teal { color: #0f766e; border-color: #0f766e; transition: all 0.2s ease-in-out; }
+        .btn-outline-teal:hover { background-color: #0f766e; color: white; transform: translateY(-1px); }
+        .card { border: none; border-radius: 1rem; box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075); }
+    </style>
 </head>
 <body>
-    <h2>Welcome to your Dashboard, <span th:text="${user.firstName}">User</span>!</h2>
-    <p>Logged in as: <strong th:text="${user.username}"></strong> (<span th:text="${role}">Role</span>)</p>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm py-3 mb-4">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center text-teal fw-bold fs-4" href="/dashboard">
+                <img src="/images/logo.png" alt="PetSitter Logo" height="40" class="me-2"> PetSitter
+            </a>
+            <div class="d-flex gap-3">
+                <a href="/dashboard" class="btn btn-outline-secondary fw-medium px-3 rounded-pill">Dashboard</a>
+                <a href="/logout" class="btn btn-outline-danger fw-medium px-3 rounded-pill">Logout</a>
+            </div>
+        </div>
+    </nav>
 
-    <p><a href="/profile">Edit My Profile</a></p>
+    <!-- Main Content -->
+    <div class="container pb-5">
+        <div class="card p-4 mb-4 shadow-sm border-0 bg-white">
+            <h2 class="fw-bold text-dark mb-1">Welcome back, <span th:text="${user.firstName}"></span>!</h2>
+            <p class="text-muted fs-6 mb-3">Logged in as: <strong th:text="${user.username}"></strong> (<span th:text="${role}"></span>)</p>
+            <div>
+                <a href="/profile" class="btn btn-sm btn-outline-secondary rounded-pill px-3"><i class="bi bi-person-gear me-1"></i>Edit My Profile</a>
+            </div>
+        </div>
 
-    <div th:if="${role == 'OWNER'}">
-        <h3>Pet Owner Menu</h3>
-        <ul>
-            <li><a href="/pets/add">Add a Pet</a></li>
-            <li><a href="/pets">My Pets</a></li>
-            <li><a href="/search">Find a Sitter</a></li>
-            <li><a href="/my-bookings">My Bookings</a></li>
-        </ul>
+        <div class="row g-4">
+            <div th:if="${role == 'OWNER'}" class="col-md-6">
+                <div class="card h-100 p-4 border-top border-4 border-teal shadow-sm bg-white">
+                    <h4 class="fw-bold text-teal mb-4"><i class="bi bi-house-heart me-2"></i>Pet Owner Menu</h4>
+                    <div class="d-grid gap-3">
+                        <a href="/search" class="btn btn-teal py-2 text-start px-3"><i class="bi bi-search me-2"></i>Find a Sitter</a>
+                        <a href="/my-bookings" class="btn btn-outline-teal py-2 text-start px-3"><i class="bi bi-calendar-check me-2"></i>My Bookings</a>
+                        <a href="/pets" class="btn btn-outline-teal py-2 text-start px-3"><i class="bi bi-info-circle me-2"></i>My Pets</a>
+                        <a href="/pets/add" class="btn btn-outline-secondary py-2 text-start px-3"><i class="bi bi-plus-circle me-2"></i>Add a Pet</a>
+                    </div>
+                </div>
+            </div>
+
+            <div th:if="${role == 'SITTER'}" class="col-md-6">
+                <div class="card h-100 p-4 border-top border-4 border-teal shadow-sm bg-white">
+                    <h4 class="fw-bold text-teal mb-4"><i class="bi bi-briefcase me-2"></i>Pet Sitter Menu</h4>
+                    <div class="d-grid gap-3">
+                        <a href="/requests" class="btn btn-teal py-2 text-start px-3"><i class="bi bi-inbox me-2"></i>Pending Requests</a>
+                        <a href="/services" class="btn btn-outline-teal py-2 text-start px-3"><i class="bi bi-card-checklist me-2"></i>My Offered Services</a>
+                    </div>
+                </div>
+            </div>
+
+            <div th:if="${role == 'ADMIN'}" class="col-md-6">
+                <div class="card h-100 p-4 border-top border-4 border-danger shadow-sm bg-white">
+                    <h4 class="fw-bold text-danger mb-4"><i class="bi bi-shield-lock me-2"></i>Admin Menu</h4>
+                    <div class="d-grid gap-3">
+                        <a href="/admin/users" class="btn btn-outline-danger py-2 text-start px-3"><i class="bi bi-people me-2"></i>All Users</a>
+                        <a href="/admin/bookings" class="btn btn-outline-danger py-2 text-start px-3"><i class="bi bi-calendar me-2"></i>All Bookings</a>
+                        <a href="/admin/pets" class="btn btn-outline-danger py-2 text-start px-3"><i class="bi bi-info-circle me-2"></i>All Pets</a>
+                        <a href="/admin/reviews" class="btn btn-outline-danger py-2 text-start px-3"><i class="bi bi-star me-2"></i>All Reviews</a>
+                        <a href="/admin/services" class="btn btn-outline-danger py-2 text-start px-3"><i class="bi bi-list-ul me-2"></i>Manage Services</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <div th:if="${role == 'SITTER'}">
-        <h3>Pet Sitter Menu</h3>
-        <ul>
-            <li><a href="/requests">Pending Requests</a></li>
-            <li><a href="/services">My Offered Services</a></li>
-        </ul>
-    </div>
-
-    <div th:if="${role == 'ADMIN'}">
-        <h3>Admin Menu</h3>
-        <ul>
-            <li><a href="/admin/users">All Users</a></li>
-            <li><a href="/admin/bookings">All Bookings</a></li>
-            <li><a href="/admin/pets">All Pets</a></li>
-            <li><a href="/admin/reviews">All Reviews</a></li>
-            <li><a href="/admin/services">Manage Services</a></li>
-        </ul>
-    </div>
-
-    <p><br/><a href="/logout">Logout</a></p>
 </body>
 </html>
