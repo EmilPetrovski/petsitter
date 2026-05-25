@@ -54,14 +54,17 @@ public class BookingService {
         return bookingRepository.save(booking);
     }
 
+    @Transactional(readOnly = true)
     public List<Booking> getBookingsForSitter(String sitterId) {
         return bookingRepository.findBySitter_UserIdOrderByDateFromDesc(sitterId);
     }
 
+    @Transactional(readOnly = true)
     public List<Booking> getBookingsForOwner(String ownerId) {
         return bookingRepository.findByOwner_UserIdOrderByDateFromDesc(ownerId);
     }
 
+    @Transactional(readOnly = true)
     public List<Booking> getAllBookings() {
         return bookingRepository.findAll();
     }

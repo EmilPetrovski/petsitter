@@ -23,14 +23,17 @@ public class PetService {
         this.petOwnerRepository = petOwnerRepository;
     }
 
+    @Transactional(readOnly = true)
     public List<PetType> getAllPetTypes() {
         return petTypeRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
     public List<Pet> getPetsByOwner(String ownerId) {
         return petRepository.findByOwner_UserId(ownerId);
     }
 
+    @Transactional(readOnly = true)
     public List<Pet> getAllPets() {
         return petRepository.findAll();
     }

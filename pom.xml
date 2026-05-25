@@ -15,6 +15,7 @@
 	<description>Databases 2026 Project PetSitter</description>
 	<properties>
 		<java.version>21</java.version>
+		<hikaricp.version>6.2.1</hikaricp.version>
 	</properties>
 	<dependencies>
 		<dependency>
