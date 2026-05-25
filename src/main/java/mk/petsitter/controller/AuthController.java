@@ -20,7 +20,6 @@ public class AuthController {
 
     @GetMapping("/login")
     public String showLoginForm() {
-        // Renders the login.html template
         return "login";
     }
 
@@ -33,7 +32,6 @@ public class AuthController {
         
         User user = userService.authenticate(username, password);
         if (user != null) {
-            // Start authenticated session
             session.setAttribute("loggedInUser", user);
             return "redirect:/dashboard"; 
         }

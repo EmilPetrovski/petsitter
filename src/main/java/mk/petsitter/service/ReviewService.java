@@ -28,14 +28,17 @@ public class ReviewService {
         return reviewRepository.save(review);
     }
 
+    @Transactional(readOnly = true)
     public Double getAverageRating(String sitterId) {
         return reviewRepository.getAverageRatingForSitter(sitterId);
     }
 
+    @Transactional(readOnly = true)
     public List<Review> getReviewsForSitter(String sitterId) {
         return reviewRepository.findByBooking_Sitter_UserId(sitterId);
     }
 
+    @Transactional(readOnly = true)
     public List<Review> getAllReviews() {
         return reviewRepository.findAll();
     }

@@ -22,10 +22,10 @@ public class UserService {
         this.petSitterRepository = petSitterRepository;
     }
 
+    @Transactional(readOnly = true)
     public User authenticate(String username, String password) {
         User user = userRepository.findByUsername(username).orElse(null);
-        // Note: For the MVP, we use plain text comparison. 
-        // In production, you would use BCryptPasswordEncoder here!
+        // P9 - use BCryptPasswordEncoder here
         if (user != null && user.getPassword().equals(password)) {
             return user;
         }
@@ -53,8 +53,7 @@ public class UserService {
         newUser.setLastName(lastName);
         newUser.setEmail(email);
 
-        // Saving a PetOwner or PetSitter automatically saves to the parent 'users' table
-        // thanks to the @Inheritance(strategy = InheritanceType.JOINED) we set up earlier!
+        // Saving a PetOwner or PetSitter automatically saves to the parent 'users' table with InhertianceType.JOINED
         if (newUser instanceof PetOwner) {
             return petOwnerRepository.save((PetOwner) newUser);
         } else {
