@@ -71,9 +71,9 @@
                         
                         <div class="mt-auto pt-3 border-top">
                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span class="badge px-3 py-2" th:classappend="${booking.status == 'Completed' ? 'bg-success' : 'bg-danger'}" th:text="${booking.status}"></span>
+                                <span class="badge px-3 py-2" th:classappend="${(booking.status == 'Completed' or booking.status == 'Reviewed') ? 'bg-success' : 'bg-danger'}" th:text="${booking.status}"></span>
                             </div>
-                            <div th:if="${booking.status == 'Completed'}" class="mt-3">
+                            <div th:if="${booking.status == 'Completed' or booking.status == 'Reviewed'}" class="mt-3">
                                 <a th:if="${booking.review == null}" th:href="@{/review(bookingId=${booking.bookingId})}" class="btn btn-teal btn-sm w-100">Leave a Review</a>
                                 <div th:if="${booking.review != null}" class="small bg-white p-2 rounded border">
                                     <span class="text-warning"><i class="bi bi-star-fill"></i> <span th:text="${booking.review.rating}"></span>/5</span><br>
