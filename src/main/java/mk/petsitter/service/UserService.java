@@ -44,16 +44,22 @@ public class UserService {
 
     @Transactional
     public User registerUser(String username, String password, String firstName, String lastName, String email, String role) {
+        logger.info("Attempting to register new user '{}' with role '{}'", username, role);
+
+        // 1. Validate username is unique
         if (userRepository.findByUsername(username).isPresent()) {
+            logger.error("VALIDATION FAILED: Username '{}' is already taken", username);
             throw new IllegalArgumentException("Username already exists!");
         }
 
+        // 2. Validate Role Assignment
         User newUser;
         if ("OWNER".equalsIgnoreCase(role)) {
             newUser = new PetOwner();
         } else if ("SITTER".equalsIgnoreCase(role)) {
             newUser = new PetSitter();
         } else {
+            logger.error("VALIDATION FAILED: Invalid role '{}' provided", role);
             throw new IllegalArgumentException("Invalid role selected!");
         }
 
@@ -63,12 +69,16 @@ public class UserService {
         newUser.setLastName(lastName);
         newUser.setEmail(email);
 
-        // Saving a PetOwner or PetSitter automatically saves to the parent 'users' table with InhertianceType.JOINED
+        // 3. Saving a PetOwner or PetSitter automatically cascades to the parent 'users' table because of InheritanceType.JOINED
+        User savedUser;
         if (newUser instanceof PetOwner) {
-            return petOwnerRepository.save((PetOwner) newUser);
+            savedUser = petOwnerRepository.save((PetOwner) newUser);
         } else {
-            return petSitterRepository.save((PetSitter) newUser);
+            savedUser = petSitterRepository.save((PetSitter) newUser);
         }
+        
+        logger.info("Successfully registered user '{}' with ID {}", savedUser.getUsername(), savedUser.getUserId());
+        return savedUser;
     }
 
     @Transactional
