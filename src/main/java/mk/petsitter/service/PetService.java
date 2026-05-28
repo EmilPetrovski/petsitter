@@ -8,11 +8,15 @@ import mk.petsitter.model.PetType;
 import mk.petsitter.repository.PetOwnerRepository;
 import mk.petsitter.repository.PetRepository;
 import mk.petsitter.repository.PetTypeRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PetService {
+    private static final Logger logger = LoggerFactory.getLogger(PetService.class);
+
     private final PetRepository petRepository;
     private final PetTypeRepository petTypeRepository;
     private final PetOwnerRepository petOwnerRepository;
@@ -40,8 +44,24 @@ public class PetService {
 
     @Transactional
     public Pet addPet(String name, Integer age, String specialNeeds, String description, String photoUrl, String ownerId, String petTypeId) {
-        PetOwner owner = petOwnerRepository.findById(ownerId).orElseThrow(() -> new IllegalArgumentException("Invalid owner ID"));
-        PetType petType = petTypeRepository.findById(petTypeId).orElseThrow(() -> new IllegalArgumentException("Invalid pet type ID"));
+        logger.info("Attempting to add pet '{}' for owner ID: {}", name, ownerId);
+
+        if (name == null || name.isBlank()) {
+            logger.error("VALIDATION FAILED: Pet name is null or empty");
+            throw new IllegalArgumentException("Pet name is strictly required");
+        }
+
+        // 1. Read/Verify Owner exists
+        PetOwner owner = petOwnerRepository.findById(ownerId).orElseThrow(() -> {
+            logger.error("VALIDATION FAILED: Owner not found with ID: {}", ownerId);
+            return new IllegalArgumentException("Invalid owner ID");
+        });
+        
+        // 2. Read/Verify PetType exists
+        PetType petType = petTypeRepository.findById(petTypeId).orElseThrow(() -> {
+            logger.error("VALIDATION FAILED: Pet type not found with ID: {}", petTypeId);
+            return new IllegalArgumentException("Invalid pet type ID");
+        });
         
         Pet pet = new Pet();
         pet.setName(name);
@@ -52,7 +72,11 @@ public class PetService {
         pet.setOwner(owner);
         pet.setPetType(petType);
         
-        return petRepository.save(pet);
+        // 3. Insert the new Pet
+        Pet savedPet = petRepository.save(pet);
+        logger.info("Successfully added pet '{}' under owner '{}'", savedPet.getName(), owner.getUsername());
+        
+        return savedPet;
     }
 
     @Transactional

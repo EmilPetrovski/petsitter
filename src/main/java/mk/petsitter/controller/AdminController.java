@@ -13,6 +13,7 @@ import mk.petsitter.model.Service;
 import mk.petsitter.service.BookingService;
 import mk.petsitter.service.PetService;
 import mk.petsitter.service.ReviewService;
+import mk.petsitter.service.UserService;
 import mk.petsitter.repository.UserRepository;
 import mk.petsitter.repository.ServiceRepository;
 import org.springframework.stereotype.Controller;
@@ -28,13 +29,15 @@ public class AdminController {
     private final PetService petService;
     private final ReviewService reviewService;
     private final ServiceRepository serviceRepository;
+    private final UserService userService;
 
-    public AdminController(BookingService bookingService, UserRepository userRepository, PetService petService, ReviewService reviewService, ServiceRepository serviceRepository) {
+    public AdminController(BookingService bookingService, UserRepository userRepository, PetService petService, ReviewService reviewService, ServiceRepository serviceRepository, UserService userService) {
         this.bookingService = bookingService;
         this.userRepository = userRepository;
         this.petService = petService;
         this.reviewService = reviewService;
         this.serviceRepository = serviceRepository;
+        this.userService = userService;
     }
 
     @GetMapping("/admin/bookings")
@@ -80,15 +83,9 @@ public class AdminController {
     
     @PostMapping("/admin/users/delete")
     public String deleteUser(@RequestParam String userId, HttpSession session) {
-        // Safely delete associated bookings first to respect the ON DELETE RESTRICT constraint
-        for (Booking b : bookingService.getBookingsForOwner(userId)) {
-            bookingService.deleteBooking(b.getBookingId());
-        }
-        for (Booking b : bookingService.getBookingsForSitter(userId)) {
-            bookingService.deleteBooking(b.getBookingId());
-        }
-        
-        userRepository.deleteById(userId);
+        // Delegate multiple delete operations to a single transactional service method
+        // This ensures bookings and pets are safely cleaned up before the user is deleted
+        userService.deleteUserAccount(userId);
         return "redirect:/admin/users";
     }
 
