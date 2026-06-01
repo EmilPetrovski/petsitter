@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Service
 public class UserService {
@@ -23,6 +24,7 @@ public class UserService {
     private final PetSitterRepository petSitterRepository;
     private final BookingService bookingService;
     private final PetService petService;
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public UserService(UserRepository userRepository, PetOwnerRepository petOwnerRepository, PetSitterRepository petSitterRepository, BookingService bookingService, PetService petService) {
         this.userRepository = userRepository;
@@ -36,7 +38,7 @@ public class UserService {
     public User authenticate(String username, String password) {
         User user = userRepository.findByUsername(username).orElse(null);
         // P9 - use BCryptPasswordEncoder here
-        if (user != null && user.getPassword().equals(password)) {
+        if (user != null && passwordEncoder.matches(password, user.getPassword())) {
             return user;
         }
         return null;
@@ -64,7 +66,7 @@ public class UserService {
         }
 
         newUser.setUsername(username);
-        newUser.setPassword(password);
+        newUser.setPassword(passwordEncoder.encode(password));
         newUser.setFirstName(firstName);
         newUser.setLastName(lastName);
         newUser.setEmail(email);
