@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import mk.petsitter.model.Booking;
 import mk.petsitter.model.User;
 import mk.petsitter.model.PetOwner;
@@ -66,12 +67,13 @@ public class AdminController {
         List<User> users = userRepository.findAll();
         model.addAttribute("users", users);
         
-        Map<String, List<Pet>> ownerPets = new HashMap<>();
+        // Fix N+1: Fetch all pets at once and group them by owner ID
+        Map<String, List<Pet>> ownerPets = petService.getAllPets().stream()
+                .collect(Collectors.groupingBy(pet -> pet.getOwner().getUserId()));
+                
         Map<String, List<Service>> sitterServices = new HashMap<>();
         for (User u : users) {
-            if (u instanceof PetOwner) {
-                ownerPets.put(u.getUserId(), petService.getPetsByOwner(u.getUserId()));
-            } else if (u instanceof PetSitter) {
+            if (u instanceof PetSitter) {
                 PetSitter sitter = (PetSitter) u;
                 sitterServices.put(u.getUserId(), sitter.getOfferedServices());
             }

@@ -99,7 +99,7 @@ public class BookingService {
 
     @Transactional(readOnly = true)
     public List<Booking> getAllBookings() {
-        return bookingRepository.findAll();
+        return bookingRepository.findAllWithDetails();
     }
 
     @Transactional
