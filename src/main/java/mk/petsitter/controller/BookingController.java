@@ -131,8 +131,11 @@ public class BookingController {
             return "redirect:/dashboard";
         }
         
-        List<Booking> bookings = bookingService.getBookingsForOwner(user.getUserId());
-        bookings.sort(java.util.Comparator.comparing(Booking::getDateFrom));
+        // fix n+1 - fetch all bookings with details at once and filter them in mem
+        List<Booking> bookings = bookingService.getAllBookings().stream()
+                .filter(b -> b.getOwner().getUserId().equals(user.getUserId()))
+                .sorted(java.util.Comparator.comparing(Booking::getDateFrom))
+                .collect(java.util.stream.Collectors.toList());
         
         List<Booking> activeBookings = new java.util.ArrayList<>();
         List<Booking> inactiveBookings = new java.util.ArrayList<>();
